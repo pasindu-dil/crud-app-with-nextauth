@@ -5,7 +5,7 @@ import { User } from "@/entities/user/models/user-types";
 export const nextAuthOptions: NextAuthOptions = {
   providers: authProviders,
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {      
+    async signIn({ user, account, profile, email, credentials }) { 
       return true
     },
     session({ session, token }) {
@@ -14,7 +14,7 @@ export const nextAuthOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }) {            
       if (user) {
         token.user = user;
       }

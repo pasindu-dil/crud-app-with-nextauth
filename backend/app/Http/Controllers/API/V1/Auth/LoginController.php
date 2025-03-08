@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
@@ -52,10 +54,30 @@ class LoginController extends Controller
 
     public function handleUserLogin(Request $request)
     {
-        return response()->json([
-            'name' => $request->name,
-            'email' => $request->email,
-            'data' => "From api backend"
-        ]);
+        try {
+            $email = $request->email;
+            $password = $request->password;
+
+            $user = User::where('email', $email)->first();
+
+            if (!$user || !Hash::check($password, $user->password)) {
+                return response()->json([
+                    'message' => 'Invalid credentials',
+                ], 401);
+            }
+
+            $authToken = $user->createToken('api')->plainTextToken;
+
+            return response()->json([
+                'sucess' => true,
+                'user' => $user,
+                'token' => $authToken,
+                'message' => 'Login successful',
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
     }
 }

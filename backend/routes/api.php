@@ -21,11 +21,9 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::get('/auth/redirect', [LoginController::class, 'redirectToProvider']);
-Route::post('/auth/callback', [LoginController::class, 'handleCallback']);
+// Route::get('/auth/redirect', [LoginController::class, 'redirectToProvider']);
+// Route::post('/auth/callback', [LoginController::class, 'handleCallback']);
 Route::post('/auth/login', [LoginController::class, 'handleUserLogin']);
-
-// Route::get('/countries', [CountryController::class, 'index']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/user', [UserController::class, 'index']);

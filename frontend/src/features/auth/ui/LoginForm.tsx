@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { signin } from "../api/login";
 import { loginViaGoogle } from "../api/login-via-google";
+import { signin } from "../api/login";
 
 const LoginForm = () => {
     const [state, action, pending] = useActionState(signin, undefined);

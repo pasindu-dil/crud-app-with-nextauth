@@ -1,7 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials"
-import { signin } from "@/features/auth/api/login";
+import { api } from "../api/instance";
 
 export const authProviders = [
   GoogleProvider({
@@ -19,14 +19,15 @@ export const authProviders = [
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials, req) {
-      const response = await signin({}, { email: credentials?.email!, password: credentials?.password! })
-      const user = await response.json()
-
-      // If no error and we have user data, return it
-      if (response.ok && user) {
-        return user
+      console.log("credentials", credentials);
+      
+      const response = await api.post('/auth/login', { email: credentials?.email!, password: credentials?.password! });
+      console.log(response);
+      
+      if (response.status === 200) {
+        return response.data;
       }
-      // Return null if user data could not be retrieved
+      
       return null
     },
   })
