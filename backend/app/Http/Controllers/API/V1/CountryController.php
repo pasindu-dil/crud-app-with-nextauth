@@ -18,18 +18,24 @@ class CountryController extends Controller
     public function index(Request $request)
     {
         try {
-            $page = $request->input('page', 1);
-            $limit = $request->input('limit', 10);
+            $cursor = $request->input('cursor', null);
+            $paginator = Country::orderBy('id', 'asc')->cursorPaginate(25, ['id', 'name'], 'cursor', $cursor);
 
-            $countries = Cache::remember("countries_{$page}", $this->cachingTimeout, function () use ($limit, $page) {
-                return Country::paginate($limit, ['id', 'name'], 'page', $page)->pluck('name', 'id');
+            $countries = Cache::remember("countries_{$cursor}", $this->cachingTimeout, function () use ($paginator) {
+                return $paginator->items();
             });
 
             return response()->json([
-                'countries' => $countries
+                'data' => $countries,
+                'pagination' => [
+                    'next' => $paginator->nextPageUrl(),
+                    'previous' => $paginator->previousPageUrl(),
+                    'current' => $paginator->cursor(),
+                    'per_page' => $paginator->perPage(),
+                    'more_pages' => $paginator->hasMorePages()
+                ]
             ]);
         } catch (Exception $exception) {
-            dd($exception);
             return response()->json([
                 'error' => $exception->getMessage()
             ], 500);

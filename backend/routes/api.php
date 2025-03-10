@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\CountryController;
-use App\Http\Controllers\API\V1\NetworkController;
-use App\Http\Controllers\API\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,21 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// Route::get('/auth/redirect', [LoginController::class, 'redirectToProvider']);
-// Route::post('/auth/callback', [LoginController::class, 'handleCallback']);
+Route::get('/auth/redirect', [LoginController::class, 'redirectToProvider']);
+Route::post('/auth/callback', [LoginController::class, 'handleCallback']);
 Route::post('/auth/login', [LoginController::class, 'handleUserLogin']);
 
-// Route::post('/countries', [CountryController::class, 'store']);
-
-// Route::group(['middleware' => ['auth:api']], function () {
-//     Route::get('/user', [UserController::class, 'index']);
-//     Route::resource('/networks', NetworkController::class);
-//     // Route::resource('/countries', CountryController::class);
-// });
+Route::get('/countries', [CountryController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/countries', [CountryController::class, 'store']);

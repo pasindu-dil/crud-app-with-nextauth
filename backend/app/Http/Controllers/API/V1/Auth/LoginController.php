@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
@@ -66,14 +67,22 @@ class LoginController extends Controller
                 ], 401);
             }
 
-            $authToken = $user->createToken('api')->plainTextToken;
+            $response = Http::asForm()->post('http://localhost:8000/oauth/token', [
+                'grant_type' => 'password',
+                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
+                'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
+                'username' => $email,
+                'password' => $password,
+                'scope' => '',
+            ])->json();
 
             return response()->json([
                 'sucess' => true,
                 'user' => $user,
-                'token' => $authToken,
                 'message' => 'Login successful',
-            ]);
+            ])
+                ->cookie('access_token', $response['access_token'], $response['expires_in'] / 60, null, null, true, true)
+                ->cookie('refresh_token', $response['refresh_token'], $response['expires_in'] / 60, null, null, true, true);
         } catch (Exception $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),
