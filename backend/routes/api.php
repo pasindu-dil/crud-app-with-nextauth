@@ -25,8 +25,14 @@ use Illuminate\Support\Facades\Route;
 // Route::post('/auth/callback', [LoginController::class, 'handleCallback']);
 Route::post('/auth/login', [LoginController::class, 'handleUserLogin']);
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/user', [UserController::class, 'index']);
-    Route::resource('/networks', NetworkController::class);
-    Route::resource('/countries', CountryController::class);
+// Route::post('/countries', [CountryController::class, 'store']);
+
+// Route::group(['middleware' => ['auth:api']], function () {
+//     Route::get('/user', [UserController::class, 'index']);
+//     Route::resource('/networks', NetworkController::class);
+//     // Route::resource('/countries', CountryController::class);
+// });
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/countries', [CountryController::class, 'store']);
 });

@@ -15,20 +15,19 @@ export const authProviders = [
   CredentialsProvider({
     name: "Credentials",
     credentials: {
-      email: { label: "Email", type: "email" },
+      username: { label: "Username", type: "username" },
       password: { label: "Password", type: "password" },
     },
-    async authorize(credentials, req) {
-      console.log("credentials", credentials);
+    async authorize(credentials) {
+      const loginData = {
+        email: credentials?.username,
+        password: credentials?.password,
+      };
+
+      const response = await api.post("/auth/login", loginData);
+      console.log(response.data);
       
-      const response = await api.post('/auth/login', { email: credentials?.email!, password: credentials?.password! });
-      console.log(response);
-      
-      if (response.status === 200) {
-        return response.data;
-      }
-      
-      return null
+      return response.data;
     },
   })
 ];
