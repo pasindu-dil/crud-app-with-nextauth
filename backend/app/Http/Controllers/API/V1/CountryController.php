@@ -19,17 +19,24 @@ class CountryController extends Controller
     {
         try {
             $cursor = $request->input('cursor', null);
-            $paginator = Country::orderBy('id', 'asc')->cursorPaginate(25, ['id', 'name'], 'cursor', $cursor);
+            $searchTerm = $request->input('search', null);
 
-            $countries = Cache::remember("countries_{$cursor}", $this->cachingTimeout, function () use ($paginator) {
-                return $paginator->items();
-            });
+            $query = Country::query();
+            if ($searchTerm) {
+                $query->where('name', 'like', "%{$searchTerm}%");
+            }
+
+            $paginator = $query->orderBy('id', 'asc')->cursorPaginate(15, ['id', 'name'], 'cursor', $cursor);
+
+            // $countries = Cache::remember("countries_{$cursor}_{$searchTerm}", $this->cachingTimeout, function () use ($paginator) {
+            //     return $paginator->items();
+            // });
 
             return response()->json([
-                'data' => $countries,
+                'data' => $paginator->items(),
                 'pagination' => [
-                    'next' => $paginator->nextPageUrl(),
-                    'previous' => $paginator->previousPageUrl(),
+                    'nextCursor' => $paginator->nextPageUrl(),
+                    'previousCursor' => $paginator->previousPageUrl(),
                     'current' => $paginator->cursor(),
                     'per_page' => $paginator->perPage(),
                     'more_pages' => $paginator->hasMorePages()
