@@ -1,8 +1,11 @@
 import CountryPage from "@/features/country/ui/CountryPage"
+import { getInitialProps } from "../../processes/data-fetching/get-country";
 
-const page = () => {
+const page = async () => {
+  const { initialData, initialPagination } = await getInitialProps()
+  
   return (
-    <CountryPage />
+    <CountryPage repo={{ initialData, initialPagination }} />
   )
 }
 

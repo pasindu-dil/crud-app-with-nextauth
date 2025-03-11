@@ -2,11 +2,11 @@
 
 import { FormState } from "@/entities/user/lib/definitions";
 import { api } from "@/shared/api/instance";
+import { CountryFormData } from "../model/country-types";
 
-export default async function createCountry(formState: FormState, formData: FormData) {  
+export default async function createCountry(formState: FormState, formData: CountryFormData) {  
     try {
         const response = await api.post('/countries', { name: formData.get('name') });
-        console.log(response);
         
         return response.data;
     } catch (error) {
